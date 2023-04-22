@@ -282,50 +282,41 @@ public:
 
         //well we should try greedy algorithm
         sort(nums.begin(), nums.end());
-
-        int minIndex = 0;
-        int TwoMinIndex = 1;
+        printvector(nums);
+        printf("numsLen: %d\n", numsLen);
+        // fflush(stdout);
+        
         int res = 0;
-        vector<int> AtLeastTwoTimes(numsLen, -1);//-1 means not touched
-        //we need to find the first element that is >=2*min;
-        while(TwoMinIndex<numsLen)
-        {
-        	
-        	auto LowerBound = lower_bound(nums.begin()+TwoMinIndex, nums.end(),2*nums[minIndex]);
-        	if(LowerBound == nums.end())
-        		return(res);
-        	TwoMinIndex = LowerBound-nums.begin();//so here we picked minIndex and TwoMinIndex and marked both
-        	//now the question is that 
-        	if(numsMarked[minIndex]==-1 && numsMarked[TwoMinIndex]==-1){
-        		numsMarked[minIndex]=TwoMinIndex;
-        		numsMarked[TwoMinIndex]=minIndex;	
-        		res = res+2;
-        		minIndex++;
-        		TwoMinIndex++;
+        
+        vector<int> numsVisited(numsLen,0);//1 means it is used as i, 2 means it is used as j
+        int LargestNumAvailable = numsLen/2;
+        if(numsLen%2==1)
+        	LargestNumAvailable +=1;
+        int j = 0;
+        for(j=0; j<numsLen; j++)
+        {        	
+
+        	while(LargestNumAvailable <=numsLen-1 && (numsVisited[LargestNumAvailable]>0 || nums[LargestNumAvailable] < 2*nums[j] ) )
+        		LargestNumAvailable++;
+
+        	// if (j==26)
+        	// 	printf("LargestNumAvailable: %d numsLen: %d: nums[LargestNumAvailable]: %d, 2*nums[j]: %d\n", LargestNumAvailable, numsLen,
+        	// 		nums[LargestNumAvailable], 2*nums[j]);
+        	if(LargestNumAvailable>numsLen-1)
+        		break;
+        	if( nums[LargestNumAvailable] >= 2*nums[j] && LargestNumAvailable <=numsLen-1)
+        	{
+        		numsVisited[j]=1;
+        		numsVisited[LargestNumAvailable]=2;
+        		res = res +2;
+
+        		printf("nums[%d]: %d; nums[%d]: %d\n", j, nums[j],LargestNumAvailable, nums[LargestNumAvailable]);
+        		LargestNumAvailable++;
         	}
-        	else if(numsMarked[minIndex]!=-1){
-        		//then we need to move original marked pair to go ahead
-        		int iHere= numsMarked[minIndex];
-        		int NewCandidate = minIndex;
-        		while(NewCandidate<numsLen &&
-        			numsMarked[NewCandidate]!=-1)
-        			NewCandidate++;
-        		if(NewCandidate<numsLen)
-        		{
-        			numsMarked[iHere]=NewCandidate;
-        			numsMarked[NewCandidate] = iHere;
-        			res = res+2;
-        			numsMarked[minIndex]=TwoMinIndex;
-        			numsMarked[TwoMinIndex]=minIndex;
-        		}
-        	}
-
-
         	
-        	
-
 
         }
+        printf("j: %d: LargestNumAvailable: %d\n", j, LargestNumAvailable );
         return(res);
     }
 private:
@@ -630,10 +621,11 @@ int main(){
   	// int m = 10;
   	
   	// vector<int> nums{3,5,2,4};
-  	vector<int> nums{9,2,5,4};
+  	// vector<int> nums{9,2,5,4};
   	// vector<int> nums{7,6,8};
-  	// vector<int> nums{1,78,27,48,14,86,79,68,77,20,57,21,18,67,5,51,70,85,47,56,22,79,41,8,39,81,59,74,14,45,49,15,10,28,16,77,22,65,8,36,79,94,44,80,72,8,96,78,39,92,69,55,9,44,26,76,40,77,16,69,40,64,12,48,66,7,59,10};
-  	// vector<int> nums{42,83,48,10,24,55,9,100,10,17,17,99,51,32,16,98,99,31,28,68,71,14,64,29,15,40};
+  	vector<int> nums{1,78,27,48,14,86,79,68,77,20,57,21,18,67,5,51,70,85,47,56,22,79,41,8,39,81,59,74,14,45,49,15,10,28,16,77,22,65,8,36,79,94,44,80,72,8,96,78,39,92,69,55,9,44,26,76,40,77,16,69,40,64,12,48,66,7,59,10};//64
+  	// vector<int> nums{42,83,48,10,24,55,9,100,10,17,17,99,51,32,16,98,99,31,28,68,71,14,64,29,15,40};//should be 26
+  	// vector<int> nums{57,40,57,51,90,51,68,100,24,39,11,85,2,22,67,29,74,82,10,96,14,35,25,76,26,54,29,44,63,49,73,50,95,89,43,62,24,88,88,36,6,16,14,2,42,42,60,25,4,58,23,22,27,26,3,79,64,20,92};//should be 58
   	cout<<mysol.maxNumOfMarkedIndices(nums)<<endl;
  	return(0);	
 }
