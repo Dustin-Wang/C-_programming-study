@@ -1,2 +1,2 @@
-# C--_programming-study
+# C++_programming-study
  All codes in C++
