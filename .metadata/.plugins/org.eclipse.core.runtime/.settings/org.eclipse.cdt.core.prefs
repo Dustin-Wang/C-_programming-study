@@ -1,0 +1,14 @@
+build.all.configs.enabled=false
+build.proj.ref.configs.enabled=false
+config/C++\ runoob/cdt.launchMode=run
+config/C++\ runoob/cdt.toolChain.id=gcc-x86_64-/usr/bin/gcc
+config/C++\ runoob/cdt.toolChain.type=org.eclipse.cdt.build.gcc
+eclipse.preferences.version=1
+environment/workspace/CPLUS_INCLUDE_PATH/delimiter=\:
+environment/workspace/CPLUS_INCLUDE_PATH/operation=append
+environment/workspace/CPLUS_INCLUDE_PATH/value=/usr/bin/c++
+environment/workspace/C_INCLUDE_PATH/delimiter=\:
+environment/workspace/C_INCLUDE_PATH/operation=append
+environment/workspace/C_INCLUDE_PATH/value=/usr/bin
+environment/workspace/append=true
+environment/workspace/appendContributed=true
