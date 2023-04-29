@@ -298,48 +298,49 @@ class Solution {
 public:
     vector<int> getSubarrayBeauty(vector<int>& nums, int k, int x) {
         int numsLen = nums.size();
-        for(int i=0; i< numsLen; i++)
-        	nums[i]= min(nums[i],0);
-        vector<int> res;
-        priority_queue<vector<int>> XPriorityQueue;//Max Priority queue
-        int i=0;
-        for(i=0; i<x; i++)
-        	XPriorityQueue.push(vector<int>{nums[i], numsLen-i});
-        
-        for(i=x; i<k; i++){
-        	XPriorityQueue.push(vector<int>{nums[i], numsLen-i});
-            XPriorityQueue.pop();
+        vector<int> CountOfNums(51, 0);//countOfNums[0] means the number of numbers whose are >=0 in the sliding window
+        //countOfNums[x] means the number of numbers whose are = -x in the sliding window
+        //window size = k
+        //The beauty of a subarray is the xth smallest integer in the subarray if it is negative, or 0 if there are fewer than x negative integers.
+        for(int i=0; i< k; i++)
+        {
+			 if(nums[i]>=0)
+			 	CountOfNums[0]++;
+			 else
+			 	CountOfNums[-nums[i]]++;
         }
 
-
-        vector<int> temp = XPriorityQueue.top();
-        res.push_back(temp[0]);
-        int QueueSize = x;
-        for(int l=k; l< numsLen; l++)
+        vector<int> res;
+        res.push_back(GetXthSmallest(CountOfNums, x));
+        for(int j=k; j<numsLen; j++)
         {
-        	//first we push back the lth element into array
-        	XPriorityQueue.push(vector<int>{nums[l], numsLen-l});
-        	QueueSize++;
-        	
-        	vector<int> temp = XPriorityQueue.top();
-        	printf("l: %d\n", l);
-        	printvector(temp);
-        	int indexForThisTemp = numsLen-temp[1];
-        	printf("indexForThisTemp: %d\n", indexForThisTemp);
-        	while(indexForThisTemp<=l-k){
-        		XPriorityQueue.pop();
-        		temp = XPriorityQueue.top();
-        		indexForThisTemp = numsLen-temp[1];
-        	}
+        	//remove nums[j-k], add nums[j] into our CountOfNums
+        	if(nums[j-k]>=0)
+        		CountOfNums[0]--;
+        	else
+        		CountOfNums[-nums[j-k]]--;
 
-        	temp = XPriorityQueue.top();
-
-        	res.push_back(temp[0]);
+        	if(nums[j]>=0)
+        		CountOfNums[0]++;
+        	else
+        		CountOfNums[-nums[j]]++;
+        	res.push_back(GetXthSmallest(CountOfNums, x));
         }
         return(res);
-
     }
-private:	
+private:
+	int GetXthSmallest(vector<int> CountOfNums, int x)
+	{
+		int CountOfNumsLen = CountOfNums.size();
+		int acc = 0;
+		int i = CountOfNumsLen-1;
+		while(acc<x)
+		{
+			acc= acc+CountOfNums[i];
+			i--;
+		}
+		return(-i-1);
+	}	
 	vector<int> CheckPrime(int x)
 	{
 		vector<int> IsPrime(x+1,0);//0 is excluded, 1 is not prime, 2 is prime
@@ -556,12 +557,12 @@ int main(){
 	string word ="abc";
 	// string word ="b";
 	// string word ="aaa";
-	vector<int> nums{1,-1,-3,-2,3};
-	int k= 3;
-	int x=2;
-	// vector<int> nums{-1,-2,-3,-4,-5};
-	// int k= 2;
+	// vector<int> nums{1,-1,-3,-2,3};
+	// int k= 3;
 	// int x=2;
+	vector<int> nums{-3,1,2,-3,0,-3};
+	int k= 2;
+	int x=1;
 	printvector(mysol.getSubarrayBeauty(nums, k, x));
 	
 	
