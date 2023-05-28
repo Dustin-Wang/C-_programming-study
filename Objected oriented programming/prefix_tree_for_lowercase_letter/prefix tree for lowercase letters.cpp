@@ -27,16 +27,16 @@ typedef pair<int, int> pii;
 // REMEMBER CLEAR GLOBAL STATE
 
 
-struct Treenode{
+struct Trienode{
     char val;
-    int endshere;
+    int endsHere;
     int count;
-    Treenode* child[26];
+    Trienode* child[26];
 };
-Treenode* getNode(char c){
-    Treenode* res=new Treenode();
+Trienode* getNode(char c){
+    Trienode* res=new Trienode();
     res->val=c;
-    res->endshere=0;
+    res->endsHere=0;
     res->count=0;
     for(int i=0;i<26;i++){
         res->child[i]=nullptr;

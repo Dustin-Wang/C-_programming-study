@@ -290,32 +290,29 @@ public:
     long long beautifulSubarrays(vector<int>& nums) {
         //10^6 is roughly at most 21bits
         //we need to count how many 1 for each bits
-    	int N = pow(2,21);
+    	// int N = pow(2,21);
         
+        //the key is that subarray sum is the difference between the XOR sum of 2 prefixes
         long long res =0;
         int numsLen= nums.size();
+        int AccumulatedXORSum = 0;
+        map<int, int> PrefixXORSum;
+        PrefixXORSum[0]=1;//empty is also a valid prefix
         
-        vector<long long> XORSumValueCountsEndAtI(N,0);
-        XORSumValueCountsEndAtI[nums[0]]=1;
-        res = res + XORSumValueCountsEndAtI[0];
-        
-        for(int i=1; i< numsLen; i++)
+        for(int i=0;i<numsLen; i++)
         {
-        	vector<long long> NewXORSumValueCountsEndAtI(N,0);
-        	NewXORSumValueCountsEndAtI[nums[i]]=1;
-        	for(int first=0; first<N; first++)
-        	{
-        		
-        		// int second = ;
-        		// int temp = first^nums[i];
-        		// if(NewXORSumValueCountsEndAtI.find(temp) == NewXORSumValueCountsEndAtI.end())
-        		// 	NewXORSumValueCountsEndAtI[(first^nums[i])] = second;
-        		// else
-        		NewXORSumValueCountsEndAtI[(first^nums[i])] += XORSumValueCountsEndAtI[first];
-        	}
-        	XORSumValueCountsEndAtI = NewXORSumValueCountsEndAtI;
-        	res = res + XORSumValueCountsEndAtI[0];
-        	
+        	AccumulatedXORSum = AccumulatedXORSum^nums[i];
+        	if(PrefixXORSum.find(AccumulatedXORSum)==PrefixXORSum.end())
+        		PrefixXORSum[AccumulatedXORSum] = 1;
+        	else
+        		PrefixXORSum[AccumulatedXORSum]++;
+        }
+
+        for(auto it:PrefixXORSum)
+        {
+        	long long temp = it.second;
+        	// printf("it->first: %d, it->second: %d\n", it.first, it.second);
+        	res += temp*(temp-1)/2;
         }
         return(res);
         
