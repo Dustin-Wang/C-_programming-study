@@ -213,21 +213,21 @@ public:
         // cout<<-10000%10001<<endl;
 
         unsigned long long Distance = 0;
-        
+        vector<long long> NewPositions(numsSize,0);
         for(unsigned long long i=0; i<numsSize;i++)
         	if(s[i]=='R')
-        		nums[i] = (nums[i]%LargePrime+d)%LargePrime;
+        		NewPositions[i] = nums[i]+d;
         	else
-        		nums[i]=(nums[i]%LargePrime-d)%LargePrime;
+        		NewPositions[i]=nums[i]-d;
         
+        sort(NewPositions.begin(), NewPositions.end());
+        // printvector(NewPositions);
+
+        for(int i=1; i<numsSize; i++)
+        	Distance = (Distance+((((NewPositions[i]-NewPositions[i-1])%LargePrime)*i)%LargePrime*(numsSize-i))%LargePrime)%LargePrime;
         
-        for(unsigned long long i=0; i<numsSize; i++)
-        	for(unsigned long long j=i+1; j<numsSize; j++)
-        	{
-        		int temp3 = (nums[i]-nums[j])%LargePrime;
-        		Distance = (Distance+abs(temp3))%LargePrime;
-        	}
-        
+        // printf("hello\n");
+        // fflush(stdout);
         return(Distance);
     }
 private:
@@ -294,9 +294,9 @@ vector<vector<int>> ArrayTo2dVector(int (&array)[rows][cols]){
 
 int main(){
 	Solution mysol;
-	vector<int> nums{-2,0,2};
-	string s = "RLL";
-	int d = 3;
+	vector<int> nums{-10,-13,10,14,11};
+	string s = "LRLLR";
+	int d = 2;
 	cout<<mysol.sumDistance(nums, s, d)<<endl;
 	return(0);
     
