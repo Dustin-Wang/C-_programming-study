@@ -45,35 +45,40 @@ typedef pair<int, int> pii;
 // } myobject;
 
 /*
-6893. Special Permutations
+6900. Count Complete Subarrays in an Array
 
 
-You are given a 0-indexed integer array nums containing n distinct positive integers. A permutation of nums is called special if:
+You are given an array nums consisting of positive integers.
 
-    For all indexes 0 <= i < n - 1, either nums[i] % nums[i+1] == 0 or nums[i+1] % nums[i] == 0.
+We call a subarray of an array complete if the following condition is satisfied:
 
-Return the total number of special permutations. As the answer could be large, return it modulo 109 + 7.
+    The number of distinct elements in the subarray is equal to the number of distinct elements in the whole array.
+
+Return the number of complete subarrays.
+
+A subarray is a contiguous non-empty part of an array.
 
  
 
 Example 1:
 
-Input: nums = [2,3,6]
-Output: 2
-Explanation: [3,6,2] and [2,6,3] are the two special permutations of nums.
+Input: nums = [1,3,1,2,2]
+Output: 4
+Explanation: The complete subarrays are the following: [1,3,1,2], [1,3,1,2,2], [3,1,2] and [3,1,2,2].
 
 Example 2:
 
-Input: nums = [1,4,3]
-Output: 2
-Explanation: [3,1,4] and [4,1,3] are the two special permutations of nums.
+Input: nums = [5,5,5,5]
+Output: 10
+Explanation: The array consists only of the integer 5, so any subarray is complete. The number of subarrays that we can choose is 10.
 
  
 
 Constraints:
 
-    2 <= nums.length <= 14
-    1 <= nums[i] <= 10^9
+    1 <= nums.length <= 1000
+    1 <= nums[i] <= 2000
+
 
 
 */
@@ -288,70 +293,49 @@ int quick_pow10(int n)
     return pow10[n];
 }
 
-
-
+//https://web.archive.org/web/20151229003112/http://blogs.msdn.com/b/jeuge/archive/2005/06/08/hakmem-bit-count.aspx
+ int BitCount(unsigned int u)                         
+ {
+    unsigned int uCount; 
+    uCount = u - ((u >> 1) & 033333333333) - ((u >> 2) & 011111111111);
+    return ((uCount + (uCount >> 3)) & 030707070707) % 63;
+ }
+ //__builtin_popcount()  is a built-in function of GCC compiler. This function is used to count the number of set bits in an unsigned integer. 
 
 class Solution {
 public:
-    int specialPerm(vector<int>& nums) {
-        int numsSize = nums.size();
+    int countCompleteSubarrays(vector<int>& nums) {
+        int numsLen = nums.size();
         
-        vector<vector<int>> Neighbors;
-        for(int i=0; i<numsSize; i++)
-        	Neighbors.push_back(vector<int>());
-        
-        for(int i=0; i<numsSize; i++)
-        	for(int j=0; j<numsSize; j++)
-        		if(j!=i && (nums[i]%nums[j]==0 || nums[i]%nums[j]==0 ))
-        		{
-        			Neighbors[i].push_back(j);
-        			Neighbors[j].push_back(i);
-        		}
-        vector<int> numsUsed(numsSize,0);
-        // for(auto it: Neighbors)
-        	// printvector(it);
+        set<int> DiffNos;
+        for(const auto& no: nums)
+        	DiffNos.insert(no);
+        int Diff = DiffNos.size();
+        // printf("diff: %d\n", Diff);
         int res = 0;
-        for(int i=0;i<numsSize;i++){
-        	numsUsed[i]=1;
-        	int temp = DFSFindAPath(i, numsSize, 1, numsUsed, Neighbors );
-        	res = (res + temp)%LargePrime;
-        	numsUsed[i]=0;
-        	// cout<<i<<":"<<temp<<endl;
-        	// fflush(stdout);
-        }
+        vector<int> DiffNosFromIndexI(numsLen,0);
         
+        vector<int> PrevOccurrence(2001,-1);
+        for(int end=0; end<numsLen; end++)
+        {
+        	//we add new element nums[end] for each subarray
+        	//need to check whether it is new or not
+        	//need to know the previous occurrence of nums[end] in nums
+        	// if(PrevOccurrence[nums[end]]!=-1)
+        	for(int start = PrevOccurrence[nums[end]]+1; start<=end; start++){
+        		DiffNosFromIndexI[start]++;
+        		if(DiffNosFromIndexI[start]==Diff)
+        			res = res + numsLen-end;
+        	}
+
+        	PrevOccurrence[nums[end]]=end;
+        }
         return(res);
     }
     
 private:
 	int LargePrime = pow(10,9)+7;
-	map<vector<int>, int> Memory;
-
-	int DFSFindAPath(int curNode, int numsSize, int Pathlength, vector<int>& numsUsed, vector<vector<int>>& Neighbors)
-	{
-		int res = 0;
-		vector<int> NextCandidates = Neighbors[curNode];
-		if(Pathlength == numsSize)
-			return(1);
-
-		vector<int> key = numsUsed;
-		key.push_back(curNode);
-		if(Memory.find(key)!=Memory.end())
-			return(Memory[key]);
-		
-		for(auto next: NextCandidates)
-		{
-			if(numsUsed[next]==0)
-			{
-				numsUsed[next]=1;
-				res = (res + DFSFindAPath(next, numsSize, Pathlength+1, numsUsed, Neighbors ))%LargePrime;
-				numsUsed[next]=0;
-			}
-		}
-		
-		Memory[key]=res;
-		return(res);
-	}
+	
 	int AbsoluteDistance(vector<int> StartNode, vector<int> EndNode)
 	{
 		return(abs(StartNode[0]-EndNode[0])+abs(StartNode[1]-EndNode[1]));
@@ -576,8 +560,8 @@ int main(){
 	// int n=1;
 	// vector<vector<int>> queries = ArrayTo2dVector(inputs);
 	
-	vector<int> nums{1,4,3};
-	cout<<mysol.specialPerm(nums)<<endl;
+	vector<int> nums{5,5,5,5};
+	cout<<mysol.countCompleteSubarrays(nums)<<endl;
 	
 	// vector<vector<int>> res= mysol.substringXorQueries(s, queries);
 	// 
